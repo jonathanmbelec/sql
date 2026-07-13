@@ -12,7 +12,7 @@ ligne par courriel de membre, combinant les métriques globales, récurrentes et
 uniques des contributions, ainsi que le statut de souscription. Le résultat
 alimentait la segmentation et les rapports sur les relations avec les donateurs.
 
-- [`original/creation_overview_membres.sql`](original/creation_overview_membres.sql) — telle qu'écrite en production (MySQL)
+- [`original/creation_overview_membres.sql`](original/creation overview membres.sql) — telle qu'écrite en production (MySQL)
 - [`revisite/improved_version.sql`](revisite/improved_version.sql) — la réécriture de 2026 (MySQL 8.0+)
 
 ## Ce qui a changé, et pourquoi c'est important

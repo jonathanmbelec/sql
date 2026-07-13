@@ -7,16 +7,6 @@
 
    Grain   : One row per member email.
 
-   Notes   :
-   - Dialect: MySQL 8.0+ (CTEs require 8.0; DATE_FORMAT / CONVERT_TZ /
-     GROUP_CONCAT are MySQL-specific).
-   - Transaction type is inferred from DIM_CHARGE_DETAIL.description:
-     'Contribution unique' = one-time; anything else = recurring.
-     (Data-quality constraint: no dedicated transaction-type flag exists.)
-   - Timestamps are stored in UTC and converted to US/Eastern for reporting.
-   - Rows with blank/whitespace emails are excluded (known data-quality issue).
-   ============================================================================= */
-
 WITH
 
 /* ---------------------------------------------------------------------------
@@ -52,9 +42,9 @@ global_stats AS (
         firstname,
         lastname,
         gender,
-        COUNT(*)                                        AS nbs_de_txns_globales,
-        SUM(amount)                                     AS montant_global,
-        ROUND(AVG(amount), 2)                           AS montant_global_moyen,
+        COUNT(*) AS nbs_de_txns_globales,
+        SUM(amount) AS montant_global,
+        ROUND(AVG(amount), 2) AS montant_global_moyen,
         DATE_FORMAT(CONVERT_TZ(MIN(creation_date), '+00:00', 'US/Eastern'), '%Y-%m-%d') AS premiere_txn,
         DATE_FORMAT(CONVERT_TZ(MAX(creation_date), '+00:00', 'US/Eastern'), '%Y-%m-%d') AS derniere_txn
     FROM charges
@@ -67,10 +57,10 @@ global_stats AS (
 recurring_stats AS (
     SELECT
         email,
-        COUNT(*)                 AS nbs_txn_recurrente,
-        COUNT(DISTINCT amount)   AS nbs_de_montant_recurrent_different,
-        SUM(amount)              AS montant_recurrent_total,
-        ROUND(AVG(amount), 2)    AS montant_moyen_recurrent,
+        COUNT(*) AS nbs_txn_recurrente,
+        COUNT(DISTINCT amount)  AS nbs_de_montant_recurrent_different,
+        SUM(amount) AS montant_recurrent_total,
+        ROUND(AVG(amount), 2) AS montant_moyen_recurrent,
         DATE_FORMAT(CONVERT_TZ(MIN(creation_date), '+00:00', 'US/Eastern'), '%Y-%m-%d') AS premiere_txn_recurrente,
         DATE_FORMAT(CONVERT_TZ(MAX(creation_date), '+00:00', 'US/Eastern'), '%Y-%m-%d') AS derniere_txn_recurrente
     FROM charges
@@ -84,10 +74,10 @@ recurring_stats AS (
 one_time_stats AS (
     SELECT
         email,
-        COUNT(*)                 AS nbs_txn_unique,
-        COUNT(DISTINCT amount)   AS nbs_de_montant_unique_different,
-        SUM(amount)              AS montant_unique_total,
-        ROUND(AVG(amount), 2)    AS montant_moyen_unique,
+        COUNT(*) AS nbs_txn_unique,
+        COUNT(DISTINCT amount) AS nbs_de_montant_unique_different,
+        SUM(amount) AS montant_unique_total,
+        ROUND(AVG(amount), 2) AS montant_moyen_unique,
         DATE_FORMAT(CONVERT_TZ(MIN(creation_date), '+00:00', 'US/Eastern'), '%Y-%m-%d') AS premiere_txn_unique,
         DATE_FORMAT(CONVERT_TZ(MAX(creation_date), '+00:00', 'US/Eastern'), '%Y-%m-%d') AS derniere_txn_unique
     FROM charges
@@ -104,9 +94,9 @@ subscription_stats AS (
     SELECT
         dc.email,
         GROUP_CONCAT(dsd.status ORDER BY fs.id_subscription_detail SEPARATOR ', ') AS statut_souscription,
-        COUNT(*)                                                                   AS nb_subscription
-    FROM sandbox.FACT_SUBSCRIPTION       AS fs
-    INNER JOIN sandbox.DIM_CUSTOMER      AS dc
+        COUNT(*) AS nb_subscription
+    FROM sandbox.FACT_SUBSCRIPTION AS fs
+    INNER JOIN sandbox.DIM_CUSTOMER AS dc
         ON fs.id_customer = dc.id_customer
     INNER JOIN sandbox.DIM_SUBSCRIPTION_DETAIL AS dsd
         ON fs.id_subscription_detail = dsd.id_subscription_detail
@@ -120,10 +110,10 @@ subscription_stats AS (
    contribution type or no subscription record.
    --------------------------------------------------------------------------- */
 SELECT
-    g.email                                AS email,
-    g.firstname                            AS prenom,
-    g.lastname                             AS nom_de_famille,
-    g.gender                               AS genre,
+    g.email AS email,
+    g.firstname AS prenom,
+    g.lastname AS nom_de_famille,
+    g.gender AS genre,
 
     -- Recurring contributions
     r.nbs_de_montant_recurrent_different,

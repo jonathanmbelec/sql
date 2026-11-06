@@ -1,0 +1,26 @@
+SELECT
+		nom_salle, 
+		titre,
+		billets_vendus,
+		J60_pct,
+		J30_pct,
+		J14_pct
+FROM
+	(SELECT
+		  p.titre,
+		  s.nom_salle,
+		  SUM(v.quantite) AS billets_vendus,
+		  ROUND(100.0 * SUM(CASE WHEN DATEDIFF(day, v.date_achat, e.date_evenement) >=60 THEN v.quantite ELSE 0 END) / SUM(v.quantite),1) AS J60_pct,
+		  ROUND(100.0 * SUM(CASE WHEN DATEDIFF(day, v.date_achat, e.date_evenement) >=30 THEN v.quantite ELSE 0 END) / SUM(v.quantite),1) AS J30_pct,
+		  ROUND(100.0 * SUM(CASE WHEN DATEDIFF(day, v.date_achat, e.date_evenement) >=14 THEN v.quantite ELSE 0 END) / SUM(v.quantite), 1) AS J14_pct,
+		  ROW_NUMBER() OVER (PARTITION BY s.salle_id
+								ORDER BY SUM(v.quantite) DESC, p.production_id) AS rang
+	FROM dbo.fact_ventes v
+	INNER JOIN dbo.dim_evenement e on v.evenement_id = e.evenement_id
+	INNER JOIN dbo.dim_salle s on s.salle_id = e.salle_id
+	INNER JOIN dbo.dim_production p on p.production_id = e.production_id
+	WHERE e.saison = N'Saison 2025-2026' AND e.statut_evenement = 'Tenu'
+	  AND v.statut_ligne = 'Vendu' AND v.date_achat <= e.date_evenement
+	GROUP BY s.salle_id,s.nom_salle,p.production_id, p.titre) a
+WHERE rang <=10
+ORDER BY a.nom_salle, a.rang;

@@ -1,5 +1,5 @@
-/**A1.** Pour la saison 2025-2026, présentez par salle : nombre de représentations, billets vendus, revenus de billets et taux de remplissage.
-Excluez les événements annulés et les lignes remboursées*/
+/* Pour la saison 2025-2026, prÃ©sentation par salle : nombre de reprÃ©sentations, billets vendus, revenus de billets et taux de remplissage.
+Exclusion: les Ã©vÃ©nements annulÃ©s et les lignes remboursÃ©es*/
 
 SELECT
 		s.nom_salle AS salle,

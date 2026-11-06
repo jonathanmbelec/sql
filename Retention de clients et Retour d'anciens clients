@@ -19,7 +19,7 @@ LEFT JOIN
 	;
 
 
--- b) clients 2026-2027 absents de 2025-2026 (nouveaux ou réactivés)
+-- b) clients 2026-2027 absents de 2025-2026 (nouveaux ou rÃ©activÃ©s)
 SELECT COUNT(*) AS nouveaux_ou_reactives_s2
 FROM (
   SELECT DISTINCT v.client_id

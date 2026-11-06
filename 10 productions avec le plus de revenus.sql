@@ -1,4 +1,4 @@
- /*Top 10 productions (revenus, remplissage, représentations sous 60 % */
+ /*Top 10 productions (revenus, remplissage, reprÃ©sentations sous 60 % */
 SELECT	Top 10
 		p.titre, 
 		p.genre,
